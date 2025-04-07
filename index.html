@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>What's My Aesthetic? | Color Palette Generator</title>
+    <style>
+        :root {
+            --cream: #FFF5E4;
+            --pink: #FFD1D1;
+            --peach: #FF9494;
+            --rose: #FF7BA9;
+            --purple: #C4A1FF;
+            --text: #5E5E5E;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Nunito', sans-serif;
+        }
+        
+        body {
+            background-color: var(--cream);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+            background-image: radial-gradient(circle at 10% 20%, rgba(255, 214, 214, 0.2) 0%, transparent 20%),
+                              radial-gradient(circle at 90% 80%, rgba(196, 161, 255, 0.2) 0%, transparent 20%);
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--rose);
+            font-weight: 800;
+            text-shadow: 2px 2px 0px rgba(255, 148, 148, 0.2);
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .subtitle {
+            color: var(--text);
+            opacity: 0.8;
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+        }
+        
+        .upload-container {
+            background-color: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(255, 148, 148, 0.1);
+            margin-bottom: 2rem;
+            transition: all 0.3s ease;
+            border: 2px dashed var(--pink);
+        }
+        
+        .upload-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(255, 148, 148, 0.15);
+        }
+        
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--purple);
+            margin-bottom: 1rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .upload-text {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--rose);
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-btn {
+            background-color: var(--peach);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(255, 148, 148, 0.3);
+        }
+        
+        .upload-btn:hover {
+            background-color: var(--rose);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 148, 148, 0.4);
+        }
+        
+        .image-preview {
+            width: 100%;
+            max-height: 300px;
+            object-fit: cover;
+            border-radius: 15px;
+            margin-top: 1rem;
+            display: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .palette-container {
+            display: none;
+            margin-top: 2rem;
+            background-color: white;
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(196, 161, 255, 0.1);
+        }
+        
+        .palette-title {
+            font-size: 1.5rem;
+            color: var(--purple);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+        
+        .color-palette {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .color-box {
+            width: 80px;
+            height: 80px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .color-box:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        .color-code {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 0.3rem;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text);
+            border-bottom-left-radius: 15px;
+            border-bottom-right-radius: 15px;
+            text-transform: uppercase;
+        }
+        
+        .aesthetic-name {
+            font-size: 1.8rem;
+            color: var(--peach);
+            margin-top: 1rem;
+            font-weight: 800;
+            text-transform: capitalize;
+        }
+        
+        .aesthetic-desc {
+            color: var(--text);
+            opacity: 0.8;
+            margin-top: 0.5rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .action-btns {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .action-btn {
+            background-color: var(--purple);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(196, 161, 255, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(196, 161, 255, 0.4);
+        }
+        
+        .action-btn.copy {
+            background-color: var(--rose);
+            box-shadow: 0 4px 10px rgba(255, 123, 169, 0.3);
+        }
+        
+        .action-btn.copy:hover {
+            box-shadow: 0 6px 15px rgba(255, 123, 169, 0.4);
+        }
+        
+        .loading {
+            display: none;
+            margin: 2rem auto;
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--pink);
+            border-radius: 50%;
+            border-top-color: var(--purple);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .confetti {
+            position: fixed;
+            width: 10px;
+            height: 10px;
+            background-color: var(--rose);
+            opacity: 0;
+            animation: confetti-fall 5s linear forwards;
+            z-index: 1000;
+        }
+        
+        @keyframes confetti-fall {
+            0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+        
+        @media (max-width: 600px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .color-box {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .action-btns {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <h1>What's My Aesthetic?</h1>
+        <p class="subtitle">Upload a photo to discover your unique color palette ✨</p>
+        
+        <div class="upload-container" id="uploadContainer">
+            <div class="upload-icon">
+                <i class="fas fa-cloud-upload-alt"></i>
+            </div>
+            <p class="upload-text">Drag & drop your photo here or click to browse</p>
+            <input type="file" id="fileInput" class="file-input" accept="image/*">
+            <button class="upload-btn" id="uploadBtn">Choose a Photo</button>
+            <img id="imagePreview" class="image-preview" alt="Your uploaded image">
+        </div>
+        
+        <div class="loading" id="loadingSpinner"></div>
+        
+        <div class="palette-container" id="paletteContainer">
+            <h2 class="palette-title">Your Aesthetic Palette</h2>
+            <div class="color-palette" id="colorPalette">
+                <!-- Color boxes will be added here by JavaScript -->
+            </div>
+            <h3 class="aesthetic-name" id="aestheticName">Soft Girl</h3>
+            <p class="aesthetic-desc" id="aestheticDesc">Delicate pastels and dreamy tones that create a gentle, romantic vibe.</p>
+            
+            <div class="action-btns">
+                <button class="action-btn copy" id="copyBtn">
+                    <i class="fas fa-copy"></i> Copy Palette
+                </button>
+                <button class="action-btn" id="newPhotoBtn">
+                    <i class="fas fa-camera-retro"></i> New Photo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const uploadContainer = document.getElementById('uploadContainer');
+            const uploadBtn = document.getElementById('uploadBtn');
+            const fileInput = document.getElementById('fileInput');
+            const imagePreview = document.getElementById('imagePreview');
+            const paletteContainer = document.getElementById('paletteContainer');
+            const colorPalette = document.getElementById('colorPalette');
+            const aestheticName = document.getElementById('aestheticName');
+            const aestheticDesc = document.getElementById('aestheticDesc');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const copyBtn = document.getElementById('copyBtn');
+            const newPhotoBtn = document.getElementById('newPhotoBtn');
+            
+            // Sample aesthetic data
+            const aesthetics = [
+                {
+                    name: "soft girl",
+                    desc: "Delicate pastels and dreamy tones that create a gentle, romantic vibe.",
+                    colors: ["#FFD1D1", "#FFECEC", "#C4A1FF", "#FFF5E4", "#FF9494"]
+                },
+                {
+                    name: "vintage",
+                    desc: "Muted earth tones that evoke nostalgia and timeless elegance.",
+                    colors: ["#D4B483", "#A67C52", "#8C6A56", "#3A2D28", "#F0E5D3"]
+                },
+                {
+                    name: "dark academia",
+                    desc: "Rich, moody colors inspired by classic literature and old libraries.",
+                    colors: ["#3A3845", "#5F5B6B", "#826F66", "#C69B7B", "#F7CCAC"]
+                },
+                {
+                    name: "cottagecore",
+                    desc: "Natural greens and warm browns that celebrate rustic charm.",
+                    colors: ["#A2C579", "#DDFFBB", "#B5C18E", "#F7E1AE", "#DEB887"]
+                },
+                {
+                    name: "cyberpunk",
+                    desc: "Neon brights against dark backgrounds for a futuristic edge.",
+                    colors: ["#FF2A6D", "#05D9E8", "#D1F7FF", "#005678", "#0F1923"]
+                }
+            ];
+            
+            // Event Listeners
+            uploadBtn.addEventListener('click', () => fileInput.click());
+            uploadContainer.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', handleFileUpload);
+            
+            uploadContainer.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadContainer.style.borderColor = 'var(--rose)';
+                uploadContainer.style.backgroundColor = 'rgba(255, 123, 169, 0.1)';
+            });
+            
+            uploadContainer.addEventListener('dragleave', () => {
+                uploadContainer.style.borderColor = 'var(--pink)';
+                uploadContainer.style.backgroundColor = 'white';
+            });
+            
+            uploadContainer.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadContainer.style.borderColor = 'var(--pink)';
+                uploadContainer.style.backgroundColor = 'white';
+                
+                if (e.dataTransfer.files[0]) {
+                    fileInput.files = e.dataTransfer.files;
+                    handleFileUpload();
+                }
+            });
+            
+            copyBtn.addEventListener('click', copyPalette);
+            newPhotoBtn.addEventListener('click', resetGenerator);
+            
+            // Functions
+            function handleFileUpload() {
+                if (fileInput.files && fileInput.files[0]) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.style.display = 'block';
+                        uploadContainer.style.padding = '1rem';
+                        
+                        // Show loading spinner
+                        loadingSpinner.style.display = 'block';
+                        paletteContainer.style.display = 'none';
+                        
+                        // Simulate processing time
+                        setTimeout(() => {
+                            generatePalette();
+                            loadingSpinner.style.display = 'none';
+                            paletteContainer.style.display = 'block';
+                            createConfetti();
+                        }, 1500);
+                    }
+                    
+                    reader.readAsDataURL(fileInput.files[0]);
+                }
+            }
+            
+            function generatePalette() {
+                // Clear previous colors
+                colorPalette.innerHTML = '';
+                
+                // Get a random aesthetic
+                const randomAesthetic = aesthetics[Math.floor(Math.random() * aesthetics.length)];
+                
+                // Display aesthetic info
+                aestheticName.textContent = randomAesthetic.name;
+                aestheticDesc.textContent = randomAesthetic.desc;
+                
+                // Create color boxes
+                randomAesthetic.colors.forEach(color => {
+                    const colorBox = document.createElement('div');
+                    colorBox.className = 'color-box';
+                    colorBox.style.backgroundColor = color;
+                    
+                    const colorCode = document.createElement('div');
+                    colorCode.className = 'color-code';
+                    colorCode.textContent = color;
+                    
+                    colorBox.appendChild(colorCode);
+                    colorPalette.appendChild(colorBox);
+                    
+                    // Add click to copy functionality
+                    colorBox.addEventListener('click', () => {
+                        navigator.clipboard.writeText(color);
+                        
+                        // Show feedback
+                        colorCode.textContent = 'Copied!';
+                        setTimeout(() => {
+                            colorCode.textContent = color;
+                        }, 1000);
+                    });
+                });
+                
+                // Scroll to palette
+                paletteContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function copyPalette() {
+                const colors = [];
+                document.querySelectorAll('.color-code').forEach(el => {
+                    colors.push(el.textContent);
+                });
+                
+                const paletteText = My aesthetic is "${aestheticName.textContent}"!\n\nColor Palette:\n${colors.join('\n')}\n\n${aestheticDesc.textContent};
+                
+                navigator.clipboard.writeText(paletteText)
+                    .then(() => {
+                        copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                        setTimeout(() => {
+                            copyBtn.innerHTML = '<i class="fas fa-copy"></i> Copy Palette';
+                        }, 2000);
+                    });
+            }
+            
+            function resetGenerator() {
+                fileInput.value = '';
+                imagePreview.style.display = 'none';
+                paletteContainer.style.display = 'none';
+                uploadContainer.style.padding = '2rem';
+            }
+            
+            function createConfetti() {
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + 'vw';
+                    confetti.style.backgroundColor = aesthetics[Math.floor(Math.random() * aesthetics.length)].colors[0];
+                    confetti.style.animationDuration = Math.random() * 3 + 2 + 's';
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = Math.random() * 10 + 5 + 'px';
+                    
+                    document.body.appendChild(confetti);
+                    
+                    setTimeout(() => {
+                        confetti.remove();
+                    }, 5000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
